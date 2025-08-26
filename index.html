@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet քարտի ստեղծիչ</title>
+    <title>AiQezBan - Քարտի գեներատոր</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,7 +65,7 @@
         <!-- Left Panel: Controls -->
         <div class="w-full lg:w-1/3 xl:w-1/4 bg-gray-800 p-6 overflow-y-auto">
             <header class="mb-8">
-                <h1 class="text-2xl font-bold text-white">Wallet քարտի ստեղծիչ</h1>
+                <h1 class="text-2xl font-bold text-white">AiQezBan - Քարտի գեներատոր</h1>
                 <p class="text-sm text-gray-400 mt-1">Անհատականացրեք ձեր խանութի քարտը</p>
             </header>
 
@@ -172,7 +172,7 @@
                                     <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden"><img id="pass-logo-img" src="https://placehold.co/40x40/FFFFFF/000000?text=Logo" alt="Logo" class="object-cover w-full h-full"></div>
                                     <h3 id="pass-logo-text" class="font-semibold" style="color: #ffffff;">Coffee Shop</h3>
                                 </div>
-                                <button class="text-white opacity-80"><i class="fas fa-info-circle"></i></button>
+                                <button class="text-white opacity-80 info-btn"><i class="fas fa-info-circle"></i></button>
                             </div>
                             <div class="flex justify-between items-end mt-8">
                                 <div>
@@ -263,7 +263,23 @@
             const modalText = getEl('modal-text');
             const closeModalBtn = getEl('close-modal-btn');
 
-            // --- FUNCTIONS ---
+            // --- HELPER FUNCTIONS ---
+            const hexToRgb = (hex) => {
+                let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [255, 255, 255];
+            };
+
+            const downloadJson = (filename, object) => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(object, null, 2));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", filename);
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+            };
+
+            // --- CORE FUNCTIONS ---
             const updatePreview = () => {
                 updateColors();
                 updateFrontFields();
@@ -343,26 +359,129 @@
             
             const flipCard = () => passContainer.classList.toggle('is-flipped');
 
-            const showModal = (type) => {
-                if (type === 'apple') {
-                    modalTitle.textContent = 'Apple Wallet Pass';
-                    modalText.textContent = 'Իրական .pkpass ֆայլ ստեղծելու համար անհրաժեշտ է սերվերային (back-end) մաս, որը կստորագրի քարտը Apple Developer-ի հավաստագրով։';
-                } else {
-                    modalTitle.textContent = 'Google Wallet Pass';
-                    modalText.textContent = 'Google Wallet-ի քարտ ստեղծելու համար անհրաժեշտ է սերվերային (back-end) ինտեգրում Google Wallet API-ի հետ՝ քարտը գեներացնելու և օգտատիրոջ հաշվին պահպանելու համար։';
-                }
+            const showModal = (title, text) => {
+                modalTitle.textContent = title;
+                modalText.textContent = text;
                 modal.classList.remove('hidden');
+            };
+            
+            // --- DOWNLOAD FUNCTIONS ---
+            const downloadApplePassData = () => {
+                const [rBg, gBg, bBg] = hexToRgb(bgColorInput.value);
+                const [rFg, gFg, bFg] = hexToRgb(textColorInput.value);
+                const [rLg, gLg, bLg] = hexToRgb(labelColorInput.value);
+
+                const secondaryFields = [];
+                if (document.querySelector('.secondary-label').value) {
+                    secondaryFields.push({
+                        key: "secondary-1",
+                        label: document.querySelector('.secondary-label').value,
+                        value: document.querySelector('.secondary-value').value
+                    });
+                }
+
+                const backFields = [];
+                backFieldsFormContainer.querySelectorAll('.flex').forEach((group, index) => {
+                    const label = group.querySelector('.back-label').value;
+                    const value = group.querySelector('.back-value').value;
+                    if (label && value) {
+                        backFields.push({ key: `back-${index}`, label, value });
+                    }
+                });
+
+                const passData = {
+                  formatVersion: 1,
+                  passTypeIdentifier: "pass.com.example.storecard",
+                  serialNumber: "E5982H-I2",
+                  teamIdentifier: "A9B421351G",
+                  webServiceURL: "https://example.com/passes/",
+                  authenticationToken: "vxwxd7J8AlNNFPS8k0a0FfUFtq0ewzFdc",
+                  organizationName: logoTextInput.value,
+                  description: "My Awesome Store Card",
+                  logoText: logoTextInput.value,
+                  foregroundColor: `rgb(${rFg}, ${gFg}, ${bFg})`,
+                  backgroundColor: `rgb(${rBg}, ${gBg}, ${bBg})`,
+                  labelColor: `rgb(${rLg}, ${gLg}, ${bLg})`,
+                  storeCard: {
+                    primaryFields: [{
+                      key: "primary",
+                      label: primaryLabelInput.value,
+                      value: primaryValueInput.value
+                    }],
+                    secondaryFields: secondaryFields,
+                    backFields: backFields
+                  },
+                  barcode: {
+                    message: barcodeValueInput.value,
+                    format: barcodeTypeInput.value,
+                    messageEncoding: "iso-8859-1"
+                  }
+                };
+                downloadJson('pass.json', passData);
+                showModal('Apple Pass Տվյալներ (pass.json)', 'Ներբեռնվեց "pass.json" ֆայլը։ Այն սահմանում է քարտի պարունակությունը։ Իրական .pkpass ֆայլ ստեղծելու համար այս JSON-ը պետք է փաթեթավորվի նկարների, մանիֆեստի և սերվերի վրա գտնվող Apple Developer-ի հավաստագրով ստորագրության հետ։');
+            };
+
+            const downloadGooglePassData = () => {
+                const issuerId = "3388000000012345678";
+                const classId = `${issuerId}.${logoTextInput.value.replace(/\s/g, '') || 'TestClass'}`;
+                const objectId = `${issuerId}.${primaryValueInput.value.replace(/\s/g, '') || 'TestObject'}`;
+
+                const textModulesData = [];
+                backFieldsFormContainer.querySelectorAll('.flex').forEach(group => {
+                    const header = group.querySelector('.back-label').value;
+                    const body = group.querySelector('.back-value').value;
+                    if (header && body) {
+                        textModulesData.push({ header, body, id: `text-${header.replace(/\s/g, '')}` });
+                    }
+                });
+
+                const googlePassObject = {
+                    "iss": "your-service-account@developer.gserviceaccount.com",
+                    "aud": "google",
+                    "typ": "savetowallet",
+                    "origins": [],
+                    "payload": {
+                        "loyaltyObjects": [{
+                            "id": objectId,
+                            "classId": classId,
+                            "state": "ACTIVE",
+                            "heroImage": {
+                                "sourceUri": { "uri": "https://placehold.co/1032x336" },
+                                "contentDescription": { "defaultValue": { "language": "en-US", "value": "Hero image description" } }
+                            },
+                            "textModulesData": textModulesData,
+                            "barcode": {
+                                "type": barcodeTypeInput.value === 'PKBarcodeFormatQR' ? 'QR_CODE' : 'CODE_128',
+                                "value": barcodeValueInput.value,
+                                "alternateText": primaryValueInput.value
+                            },
+                            "accountId": primaryValueInput.value,
+                            "loyaltyPoints": {
+                                "label": "Points",
+                                "balance": { "string": "500" },
+                            }
+                        }]
+                    }
+                };
+
+                downloadJson('google-wallet-object.json', googlePassObject);
+                showModal('Google Wallet Object', 'Ներբեռնվեց "google-wallet-object.json" ֆայլը։ Սա այն օբյեկտի օրինակ է, որը պետք է ստորագրվի ձեր սերվերի վրա՝ Google Cloud-ի հաշվի միջոցով, որպեսզի ստեղծվի վավեր "Add to Google Wallet" հղում։');
             };
 
             // --- EVENT LISTENERS ---
             controlsPanel.addEventListener('input', updatePreview);
             logoUploadInput.addEventListener('change', handleLogoUpload);
+            
+            // Flip functionality
             flipBtn.addEventListener('click', flipCard);
+            document.querySelectorAll('.info-btn').forEach(btn => btn.addEventListener('click', flipCard));
             closeBackViewBtn.addEventListener('click', flipCard);
             
-            appleWalletBtn.addEventListener('click', () => showModal('apple'));
-            googleWalletBtn.addEventListener('click', () => showModal('google'));
+            // Download functionality
+            appleWalletBtn.addEventListener('click', downloadApplePassData);
+            googleWalletBtn.addEventListener('click', downloadGooglePassData);
             
+            // Modal close
             closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) modal.classList.add('hidden');
