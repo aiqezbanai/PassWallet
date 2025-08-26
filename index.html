@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Գրանցման Ձև</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; }
+    input { width: 100%; padding: 8px; }
+    button { background-color: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+  </style>
+</head>
+<body>
+  <form id="loyaltyForm" onsubmit="event.preventDefault(); submitForm();">
+    <div class="form-group">
+      <label for="name">Անուն:</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Էլ․ փոստ:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label for="phone">Հեռախոս:</label>
+      <input type="tel" id="phone" name="phone">
+    </div>
+    <button type="submit">Գրանցվել</button>
+  </form>
+  <div id="ctaButton" style="display: none; margin-top: 20px;">
+    <button onclick="addToWallet()">Ավելացնել Apple/Google Wallet</button>
+  </div>
+
+  <script>
+    function submitForm() {
+      const form = document.getElementById('loyaltyForm');
+      const formData = new FormData(form);
+      fetch('/api/register', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('ctaButton').style.display = 'block';
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    function addToWallet() {
+      const email = document.getElementById('email').value;
+      // Կանչել API՝ Apple/Google Wallet քարտ ստեղծելու համար
+      fetch('/api/generate-wallet-pass', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'loyalty_pass.pkpass'; // Apple Wallet
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  </script>
+</body>
+</html>
