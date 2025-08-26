@@ -66,7 +66,7 @@
         <div class="w-full lg:w-1/3 xl:w-1/4 bg-gray-800 p-6 overflow-y-auto">
             <header class="mb-8">
                 <h1 class="text-2xl font-bold text-white">AiQezBan - Քարտի գեներատոր</h1>
-                <p class="text-sm text-gray-400 mt-1">Անհատականացրեք ձեր խանութի քարտը</p>
+                <p class="text-sm text-gray-400 mt-1">Անհատականացրեք ձեր քարտը</p>
             </header>
 
             <!-- Form Controls -->
@@ -92,7 +92,7 @@
                             <input type="color" id="label-color" value="#ffffff">
                         </div>
                         <div>
-                            <label for="logo-upload" class="block mb-2 text-sm font-medium text-gray-300">Լոգոտիպ (Logo)</label>
+                            <label for="logo-upload" class="block mb-2 text-sm font-medium text-gray-300">Տարբերանշան (Logo)</label>
                             <input type="file" id="logo-upload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
                         </div>
                     </div>
@@ -111,8 +111,8 @@
                             <input type="text" id="primary-value" value="Աննա Հակոբյան" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5">
                         </div>
                         <div class="flex items-center space-x-2">
-                            <input type="text" value="Հաճախորդի համար" class="secondary-label w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Երկրորդական պիտակ">
-                            <input type="text" value="123456789" class="secondary-value w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Երկրորդական արժեք">
+                            <input type="text" value="Քարտապան" class="secondary-label w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Երկրորդական պիտակ">
+                            <input type="text" value="ai-123456" class="secondary-value w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Երկրորդական արժեք">
                         </div>
                     </div>
                 </div>
@@ -122,12 +122,12 @@
                     <h2 class="text-lg font-semibold border-b border-gray-700 pb-2 mb-4">Հետևի դաշտեր</h2>
                     <div id="back-fields-container" class="space-y-4">
                          <div class="flex items-center space-x-2">
-                            <input type="text" value="Կայք" class="back-label w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Պիտակ">
-                            <input type="text" value="www.example.com" class="back-value w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Արժեք">
+                            <input type="text" value="Սպասարկող" class="back-label w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Պիտակ">
+                            <input type="text" value="https://aiqezban.ai" class="back-value w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Արժեք">
                         </div>
                         <div class="flex items-center space-x-2">
                             <input type="text" value="Հեռախոս" class="back-label w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Պիտակ">
-                            <input type="text" value="+374 00 000000" class="back-value w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Արժեք">
+                            <input type="text" value="+374 88 100100" class="back-value w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Արժեք">
                         </div>
                     </div>
                 </div>
@@ -137,12 +137,12 @@
                     <h2 class="text-lg font-semibold border-b border-gray-700 pb-2 mb-4">Շտրիխ կոդ</h2>
                     <div class="space-y-4">
                          <select id="barcode-type" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5">
-                            <option value="PKBarcodeFormatQR">QR Code</option>
+                            <option value="PKBarcodeFormatQR">QR կոդ</option>
                             <option value="PKBarcodeFormatPDF417">PDF417</option>
-                            <option value="PKBarcodeFormatAztec">Aztec</option>
-                            <option value="PKBarcodeFormatCode128">Code 128</option>
+                            <option value="PKBarcodeFormatAztec">Aztec կոդ</option>
+                            <option value="PKBarcodeFormatCode128">Կոդ 128</option>
                         </select>
-                        <input type="text" id="barcode-value" value="https://google.com" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5">
+                        <input type="text" id="barcode-value" value="https://aiqezban.ai" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5">
                     </div>
                 </div>
             </div>
@@ -151,11 +151,11 @@
             <div class="mt-8 space-y-3">
                  <button id="apple-wallet-btn" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
                     <i class="fab fa-apple"></i>
-                    <span>Add to Apple Wallet</span>
+                    <span>Ավելացնել Apple Wallet-ում</span>
                 </button>
                  <button id="google-wallet-btn" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center space-x-2">
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.6 7.22a2.23 2.23 0 0 0-1.9-1.35l-5.32.02-3.2-.02a2.3 2.3 0 0 0-2.28 2.3L6.9 10.5l10.38.02a2.24 2.24 0 0 0 2.32-2.25v-1.05zM17.28 12.7a2.24 2.24 0 0 1-2.32 2.25L6.9 14.93v1.32a2.3 2.3 0 0 0 2.28 2.3l8.52.02 5.32.02a2.23 2.23 0 0 0 1.9-1.35l.02-1.05a2.24 2.24 0 0 0-2.32-2.25l-5.36-.02z"/></svg>
-                    <span>Add to Google Wallet</span>
+                    <span>Ավելացնել Google Wallet-ում</span>
                 </button>
             </div>
         </div>
@@ -170,34 +170,34 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden"><img id="pass-logo-img" src="https://placehold.co/40x40/FFFFFF/000000?text=Logo" alt="Logo" class="object-cover w-full h-full"></div>
-                                    <h3 id="pass-logo-text" class="font-semibold" style="color: #ffffff;">Coffee Shop</h3>
+                                    <h3 id="pass-logo-text" class="font-semibold" style="color: #ffffff;">Coffee House</h3>
                                 </div>
                                 <button class="text-white opacity-80 info-btn"><i class="fas fa-info-circle"></i></button>
                             </div>
                             <div class="flex justify-between items-end mt-8">
                                 <div>
                                      <p id="pass-primary-label" class="text-xs uppercase tracking-wider" style="color: #ffffff;">Անուն</p>
-                                     <p id="pass-primary-value" class="text-2xl" style="color: #ffffff;">Աննա Հակոբյան</p>
+                                     <p id="pass-primary-value" class="text-2xl" style="color: #ffffff;">Անուն Ազգանուն</p>
                                 </div>
                             </div>
                         </div>
                         <div class="border-t-2 border-dashed border-white border-opacity-30 my-2 flex-shrink-0"></div>
                         <div id="pass-secondary-fields" class="p-4 grid grid-cols-2 gap-4 flex-shrink-0">
                              <div class="text-left">
-                                <p class="pass-secondary-label text-xs uppercase tracking-wider" style="color: #ffffff;">Հաճախորդի համար</p>
-                                <p class="pass-secondary-value text-lg" style="color: #ffffff;">123456789</p>
+                                <p class="pass-secondary-label text-xs uppercase tracking-wider" style="color: #ffffff;">Քարտապան</p>
+                                <p class="pass-secondary-value text-lg" style="color: #ffffff;">ai-123456</p>
                             </div>
                         </div>
                         <div class="flex-grow"></div>
                         <div id="pass-barcode-area" class="bg-white p-4 flex flex-col items-center justify-center rounded-b-2xl mt-auto flex-shrink-0">
-                            <img id="pass-barcode-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://google.com" alt="Barcode" class="w-32 h-32">
-                            <p id="pass-barcode-alt-text" class="text-xs text-gray-600 mt-2">https://google.com</p>
+                            <img id="pass-barcode-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://aiqezban.ai" alt="Barcode" class="w-32 h-32">
+                            <p id="pass-barcode-alt-text" class="text-xs text-gray-600 mt-2">https://aiqezban.ai</p>
                         </div>
                     </div>
                     <!-- Pass Back -->
                     <div id="pass-preview-back" class="w-full h-full rounded-2xl shadow-2xl transition-colors duration-500 pass-face pass-back p-6 overflow-y-auto" style="background-color: #b98e60;">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-semibold" style="color: #ffffff;">Լրացուցիչ տեղեկություն</h3>
+                            <h3 class="font-semibold" style="color: #ffffff;">Սպասարկող ընկերություն</h3>
                             <button id="close-back-view-btn" class="text-white opacity-80"><i class="fas fa-times"></i></button>
                         </div>
                         <div id="pass-back-fields-content" class="space-y-4">
@@ -217,7 +217,7 @@
         <div class="bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
             <h2 id="modal-title" class="text-2xl font-bold mb-4 text-white"></h2>
             <p id="modal-text" class="text-gray-300 mb-6"></p>
-            <button id="close-modal-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Հասկանալի է</button>
+            <button id="close-modal-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Լավ</button>
         </div>
     </div>
 
