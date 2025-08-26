@@ -1,74 +1,345 @@
 <!DOCTYPE html>
 <html lang="hy">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Գրանցման Ձև</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; }
-    input { width: 100%; padding: 8px; }
-    button { background-color: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; }
-    button:hover { background-color: #0056b3; }
-  </style>
-</head>
-<body>
-  <form id="loyaltyForm" onsubmit="event.preventDefault(); submitForm();">
-    <div class="form-group">
-      <label for="name">Անուն:</label>
-      <input type="text" id="name" name="name" required>
-    </div>
-    <div class="form-group">
-      <label for="email">Էլ․ փոստ:</label>
-      <input type="email" id="email" name="email" required>
-    </div>
-    <div class="form-group">
-      <label for="phone">Հեռախոս:</label>
-      <input type="tel" id="phone" name="phone">
-    </div>
-    <button type="submit">Գրանցվել</button>
-  </form>
-  <div id="ctaButton" style="display: none; margin-top: 20px;">
-    <button onclick="addToWallet()">Ավելացնել Apple/Google Wallet</button>
-  </div>
-
-  <script>
-    function submitForm() {
-      const form = document.getElementById('loyaltyForm');
-      const formData = new FormData(form);
-      fetch('/api/register', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('ctaButton').style.display = 'block';
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet քարտի ստեղծիչ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
         }
-      })
-      .catch(error => console.error('Error:', error));
-    }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        /* Style for the color input picker */
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
 
-    function addToWallet() {
-      const email = document.getElementById('email').value;
-      // Կանչել API՝ Apple/Google Wallet քարտ ստեղծելու համար
-      fetch('/api/generate-wallet-pass', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      })
-      .then(response => response.blob())
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'loyalty_pass.pkpass'; // Apple Wallet
-        a.click();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch(error => console.error('Error:', error));
-    }
-  </script>
+    <!-- Main Container -->
+    <div class="flex flex-col lg:flex-row h-screen overflow-hidden">
+
+        <!-- Left Panel: Controls -->
+        <div class="w-full lg:w-1/3 xl:w-1/4 bg-gray-800 p-6 overflow-y-auto">
+            <header class="mb-8">
+                <h1 class="text-2xl font-bold text-white">Wallet քարտի ստեղծիչ</h1>
+                <p class="text-sm text-gray-400 mt-1">Անհատականացրեք ձեր խանութի քարտը</p>
+            </header>
+
+            <!-- Form Controls -->
+            <div class="space-y-6">
+                <!-- Appearance Section -->
+                <div>
+                    <h2 class="text-lg font-semibold border-b border-gray-700 pb-2 mb-4">Տեսք</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label for="logo-text" class="text-sm font-medium text-gray-300">Կազմակերպության անուն</label>
+                            <input type="text" id="logo-text" value="Coffee Shop" class="w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5" placeholder="Օր.՝ My Shop">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-gray-300">Ֆոնի գույն</label>
+                            <input type="color" id="bg-color" value="#b98e60">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-gray-300">Տեքստի գույն</label>
+                            <input type="color" id="text-color" value="#ffffff">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium text-gray-300">Պիտակի գույն</label>
+                            <input type="color" id="label-color" value="#ffffff">
+                        </div>
+                        <div>
+                            <label for="logo-upload" class="block mb-2 text-sm font-medium text-gray-300">Լոգոտիպ (Logo)</label>
+                            <input type="file" id="logo-upload" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Fields Section -->
+                <div>
+                    <h2 class="text-lg font-semibold border-b border-gray-700 pb-2 mb-4">Հիմնական դաշտ</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="primary-label" class="text-sm font-medium text-gray-300">Պիտակ</label>
+                            <input type="text" id="primary-label" value="Անուն" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                        </div>
+                        <div>
+                            <label for="primary-value" class="text-sm font-medium text-gray-300">Արժեք</label>
+                            <input type="text" id="primary-value" value="Աննա Հակոբյան" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Fields Section -->
+                <div>
+                    <h2 class="text-lg font-semibold border-b border-gray-700 pb-2 mb-4">Երկրորդական դաշտեր</h2>
+                    <div id="secondary-fields-container" class="space-y-4">
+                        <!-- Initial secondary field -->
+                        <div class="flex items-center space-x-2">
+                            <input type="text" value="Հաճախորդի համար" class="secondary-label w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Պիտակ">
+                            <input type="text" value="123456789" class="secondary-value w-1/2 bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5" placeholder="Արժեք">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Barcode Section -->
+                <div>
+                    <h2 class="text-lg font-semibold border-b border-gray-700 pb-2 mb-4">Շտրիխ կոդ</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="barcode-type" class="text-sm font-medium text-gray-300">Տեսակ</label>
+                            <select id="barcode-type" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                                <option value="PKBarcodeFormatQR">QR Code</option>
+                                <option value="PKBarcodeFormatPDF417">PDF417</option>
+                                <option value="PKBarcodeFormatAztec">Aztec</option>
+                                <option value="PKBarcodeFormatCode128">Code 128</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="barcode-value" class="text-sm font-medium text-gray-300">Արժեք</label>
+                            <input type="text" id="barcode-value" value="https://google.com" class="mt-1 w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Button -->
+            <div class="mt-8">
+                 <button id="create-pass-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                    Ստեղծել քարտ
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Panel: Preview -->
+        <div class="w-full lg:w-2/3 xl:w-3/4 bg-gray-900 flex items-center justify-center p-4 sm:p-8 relative">
+            
+            <!-- Pass Preview -->
+            <div id="pass-preview" class="w-full max-w-sm rounded-2xl shadow-2xl transition-all duration-500" style="background-color: #b98e60;">
+                <div class="p-4">
+                    <!-- Pass Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div id="pass-logo-container" class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                                <img id="pass-logo-img" src="https://placehold.co/40x40/FFFFFF/000000?text=Logo" alt="Logo" class="object-cover w-full h-full">
+                            </div>
+                            <h3 id="pass-logo-text" class="font-semibold" style="color: #ffffff;">Coffee Shop</h3>
+                        </div>
+                        <button class="text-white opacity-80">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Pass Body -->
+                    <div class="flex justify-between items-end mt-8">
+                        <div>
+                             <p id="pass-primary-label" class="text-xs uppercase tracking-wider" style="color: #ffffff;">Անուն</p>
+                             <p id="pass-primary-value" class="text-2xl" style="color: #ffffff;">Աննա Հակոբյան</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t-2 border-dashed border-white border-opacity-30 my-2"></div>
+
+                <div id="pass-secondary-fields" class="p-4 grid grid-cols-2 gap-4">
+                     <div class="text-left">
+                        <p class="pass-secondary-label text-xs uppercase tracking-wider" style="color: #ffffff;">Հաճախորդի համար</p>
+                        <p class="pass-secondary-value text-lg" style="color: #ffffff;">123456789</p>
+                    </div>
+                </div>
+
+                <!-- Barcode Area -->
+                <div id="pass-barcode-area" class="bg-white p-4 flex flex-col items-center justify-center rounded-b-2xl mt-4">
+                    <img id="pass-barcode-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://google.com" alt="Barcode" class="w-32 h-32">
+                    <p id="pass-barcode-alt-text" class="text-xs text-gray-600 mt-2">https://google.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+            <h2 class="text-2xl font-bold mb-4 text-white">Քարտի ստեղծում</h2>
+            <p class="text-gray-300 mb-6">
+                Սա ֆրոնտ-էնդ ցուցադրություն է։ Իրական Wallet քարտ ստեղծելու համար անհրաժեշտ է սերվերային (back-end) մաս, որը կստեղծի, կստորագրի և կփաթեթավորի քարտի ֆայլը։
+            </p>
+            <button id="close-modal-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+                Հասկանալի է
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ELEMENTS ---
+            const passPreview = document.getElementById('pass-preview');
+            const passLogoText = document.getElementById('pass-logo-text');
+            const passPrimaryLabel = document.getElementById('pass-primary-label');
+            const passPrimaryValue = document.getElementById('pass-primary-value');
+            const passSecondaryFieldsContainer = document.getElementById('pass-secondary-fields');
+            const passBarcodeImg = document.getElementById('pass-barcode-img');
+            const passBarcodeAltText = document.getElementById('pass-barcode-alt-text');
+            const passLogoImg = document.getElementById('pass-logo-img');
+
+            // --- FORM INPUTS ---
+            const logoTextInput = document.getElementById('logo-text');
+            const bgColorInput = document.getElementById('bg-color');
+            const textColorInput = document.getElementById('text-color');
+            const labelColorInput = document.getElementById('label-color');
+            const primaryLabelInput = document.getElementById('primary-label');
+            const primaryValueInput = document.getElementById('primary-value');
+            const secondaryFieldsFormContainer = document.getElementById('secondary-fields-container');
+            const barcodeTypeInput = document.getElementById('barcode-type');
+            const barcodeValueInput = document.getElementById('barcode-value');
+            const logoUploadInput = document.getElementById('logo-upload');
+            
+            // --- MODAL ---
+            const modal = document.getElementById('modal');
+            const createPassBtn = document.getElementById('create-pass-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            // --- FUNCTIONS ---
+
+            /**
+             * Updates the entire pass preview based on current form values.
+             */
+            function updatePreview() {
+                // 1. Update Colors
+                const bgColor = bgColorInput.value;
+                const textColor = textColorInput.value;
+                const labelColor = labelColorInput.value;
+
+                passPreview.style.backgroundColor = bgColor;
+                passLogoText.style.color = textColor;
+                passPrimaryValue.style.color = textColor;
+                
+                document.querySelectorAll('.pass-secondary-value').forEach(el => el.style.color = textColor);
+                passPrimaryLabel.style.color = labelColor;
+                document.querySelectorAll('.pass-secondary-label').forEach(el => el.style.color = labelColor);
+
+                // 2. Update Header Text
+                passLogoText.textContent = logoTextInput.value;
+
+                // 3. Update Primary Field
+                passPrimaryLabel.textContent = primaryLabelInput.value;
+                passPrimaryValue.textContent = primaryValueInput.value;
+
+                // 4. Update Secondary Fields
+                updateSecondaryFieldsPreview();
+                
+                // 5. Update Barcode
+                updateBarcodePreview();
+            }
+
+            /**
+             * Updates only the secondary fields in the preview.
+             */
+            function updateSecondaryFieldsPreview() {
+                passSecondaryFieldsContainer.innerHTML = '';
+                const fieldGroups = secondaryFieldsFormContainer.querySelectorAll('.flex');
+                
+                fieldGroups.forEach(group => {
+                    const label = group.querySelector('.secondary-label').value;
+                    const value = group.querySelector('.secondary-value').value;
+
+                    if (label && value) {
+                        const fieldHTML = `
+                            <div class="text-left">
+                                <p class="pass-secondary-label text-xs uppercase tracking-wider" style="color: ${labelColorInput.value};">${label}</p>
+                                <p class="pass-secondary-value text-lg" style="color: ${textColorInput.value};">${value}</p>
+                            </div>
+                        `;
+                        passSecondaryFieldsContainer.innerHTML += fieldHTML;
+                    }
+                });
+            }
+
+            /**
+             * Updates the barcode image and alternate text.
+             */
+            function updateBarcodePreview() {
+                const barcodeType = barcodeTypeInput.value;
+                const barcodeValue = barcodeValueInput.value;
+                
+                // For this demo, we'll only use a QR code generator API.
+                // A real implementation would generate different barcode types.
+                if (barcodeValue) {
+                    passBarcodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(barcodeValue)}`;
+                    passBarcodeAltText.textContent = barcodeValue;
+                    passBarcodeImg.classList.remove('hidden');
+                    passBarcodeAltText.classList.remove('hidden');
+                } else {
+                    passBarcodeImg.classList.add('hidden');
+                    passBarcodeAltText.classList.add('hidden');
+                }
+            }
+
+            /**
+             * Handles logo file upload and displays a preview.
+             */
+            function handleLogoUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        passLogoImg.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            // --- EVENT LISTENERS ---
+            
+            // Listen for any input change in the form and update the preview
+            document.querySelector('.w-full.lg\\:w-1\\/3').addEventListener('input', updatePreview);
+
+            // Specific listener for file upload
+            logoUploadInput.addEventListener('change', handleLogoUpload);
+            
+            // Modal listeners
+            createPassBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+            closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+
+            // --- INITIAL CALL ---
+            // Call updatePreview once on load to sync the initial form values with the preview.
+            updatePreview();
+        });
+    </script>
 </body>
 </html>
